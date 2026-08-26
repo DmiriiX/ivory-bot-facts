@@ -15,6 +15,7 @@ import os
 import random
 import ssl
 import sys
+import urllib.error
 import urllib.request
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -63,9 +64,14 @@ def http_json(url, payload=None, headers=None, method=None):
         hdrs["Content-Type"] = "application/json"
         method = method or "POST"
     req = urllib.request.Request(url, data=data, headers=hdrs, method=method or "GET")
-    with urllib.request.urlopen(req, timeout=60) as resp:
-        body = resp.read().decode("utf-8")
-        return json.loads(body) if body else {}
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            body = resp.read().decode("utf-8")
+            return json.loads(body) if body else {}
+    except urllib.error.HTTPError as e:
+        err_body = e.read().decode("utf-8", errors="replace")
+        print(f"HTTP {e.code}: {err_body[:500]}")
+        raise
 
 
 def should_post_now(state, now):
@@ -157,41 +163,115 @@ def post_telegram(post):
     return True
 
 
+def download_bytes(url, timeout=90):
+    """Скачивает файл по URL (следует редиректам)."""
+    req = urllib.request.Request(
+        url,
+        headers={"User-Agent": "Mozilla/5.0 (compatible; ivory-art-bot/1.0)"},
+    )
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return resp.read(), resp.headers.get("Content-Type", "image/jpeg")
+
+
+def upload_image_to_max(image_bytes, filename="photo.jpg"):
+    """
+    Загружает картинку в MAX через /uploads.
+    Возвращает token (или url) для вложения.
+    """
+    boundary = "----IvoryArtBoundary7MA4YWxkTrZu0gW"
+    body = bytearray()
+
+    def add_field(name, value):
+        body.extend(f"--{boundary}\r\n".encode())
+        body.extend(f'Content-Disposition: form-data; name="{name}"\r\n\r\n'.encode())
+        body.extend(value.encode() if isinstance(value, str) else value)
+        body.extend(b"\r\n")
+
+    body.extend(f"--{boundary}\r\n".encode())
+    body.extend(
+        f'Content-Disposition: form-data; name="file"; filename="{filename}"\r\n'.encode()
+    )
+    body.extend(b"Content-Type: image/jpeg\r\n\r\n")
+    body.extend(image_bytes)
+    body.extend(b"\r\n")
+    body.extend(f"--{boundary}--\r\n".encode())
+
+    req = urllib.request.Request(
+        "https://platform-api2.max.ru/uploads?type=image",
+        data=bytes(body),
+        headers={
+            "Authorization": MAX_TOKEN,
+            "Content-Type": f"multipart/form-data; boundary={boundary}",
+        },
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=90) as resp:
+        data = json.loads(resp.read().decode("utf-8"))
+    token = data.get("token") or data.get("url")
+    if not token:
+        raise RuntimeError(f"MAX upload: no token in response: {data}")
+    return token, data
+
+
 def post_max(post):
+    """Публикация в MAX обязательно с картинкой (скачиваем и загружаем)."""
     if not MAX_TOKEN or not MAX_CHANNEL:
         print("Skip MAX: no MAX_BOT_TOKEN or MAX_CHANNEL_ID")
         return False
 
     text = post.get("caption", post.get("title", ""))
-    # MAX не любит HTML-теги
     for tag in ("<b>", "</b>", "<i>", "</i>"):
         text = text.replace(tag, "")
 
     photo = (post.get("photo") or "").strip()
     link = (post.get("link") or DEFAULT_LINK).strip()
 
-    attachments = []
-    if photo:
-        attachments.append({"type": "image", "payload": {"url": photo}})
-    attachments.append(
-        {
-            "type": "inline_keyboard",
-            "payload": {
-                "buttons": [[{"type": "link", "text": BUTTON_TEXT, "url": link}]]
-            },
-        }
-    )
+    keyboard = {
+        "type": "inline_keyboard",
+        "payload": {
+            "buttons": [[{"type": "link", "text": BUTTON_TEXT, "url": link}]]
+        },
+    }
+
+    attachments = [keyboard]
+
+    if not photo:
+        print("MAX error: no photo URL in post — need image")
+        return False
+
+    try:
+        print("Downloading image for MAX...")
+        img_bytes, content_type = download_bytes(photo)
+        print(f"Downloaded {len(img_bytes)} bytes ({content_type})")
+
+        print("Uploading image to MAX...")
+        token, upload_info = upload_image_to_max(img_bytes)
+        print("MAX upload OK:", str(upload_info)[:200])
+
+        # token или url — в зависимости от ответа API
+        if str(token).startswith("http"):
+            img_payload = {"url": token}
+        else:
+            img_payload = {"token": token}
+
+        attachments = [
+            {"type": "image", "payload": img_payload},
+            keyboard,
+        ]
+    except Exception as e:
+        print("MAX image upload failed:", e)
+        return False
 
     url = f"https://platform-api2.max.ru/messages?chat_id={MAX_CHANNEL}"
     headers = {"Authorization": MAX_TOKEN}
-    payload = {"text": text, "attachments": attachments}
+    payload = {"text": text, "attachments": attachments, "notify": True}
 
     try:
         result = http_json(url, payload, headers=headers)
         print("MAX OK:", result.get("message", {}).get("body", {}).get("mid", result))
         return True
     except Exception as e:
-        print("MAX error:", e)
+        print("MAX send error:", e)
         return False
 
 
