@@ -23,7 +23,7 @@ jobs:
           MAX_BOT_TOKEN: ${{ secrets.MAX_BOT_TOKEN }}
           MAX_CHANNEL_ID: ${{ secrets.MAX_CHANNEL_ID }}
           # Для ручного теста поставь "1", для авторежима оставь "0"
-          FORCE_POST: "1"
+          FORCE_POST: "0"
         run: python3 scripts/post_once.py
 
       - name: Save state
