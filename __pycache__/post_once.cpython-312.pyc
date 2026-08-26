@@ -1,0 +1,291 @@
+Л
+    Њ
+Ћj2(  г                   уЖ  — d Z ddlZddlZddlZddlZddlZddlZ ddlZ ddl	m	Z	m
+Z
+ ddl
+mZ ddl
+mZ ej                  e_         ee«      j%                  «       j&                  j&                  Zedz
+  Zed z
+  Zej.                  j1                  dd	«      j3                  «       Zej.                  j1                  d
+d	«      j3                  «       Zej.                  j1                  d
+d	«      j3                  «       Zej.                  j1                  dd	«      j3                  «       Z ed
+«      ZdZdZ dZ!dZ"dZ#dZ$d„ Z%d„ Z&dd„Z'd„ Z(d„ Z)d„ Z*d d„Z+d!d„Z,d„ Z-d„ Z.e/dk(  r e.«        yy)"u>  
+РђРІС‚РѕРїРѕСЃС‚РёРЅРі СЂСѓР±СЂРёРєРё В«РРЅС‚РµСЂРµСЃРЅС‹Рµ С„Р°РєС‚С‹ РѕР± РёСЃРєСѓСЃСЃС‚РІРµ РїРѕ С‡РµС‚РІРµСЂРіР°РјВ»
+РІ Telegram Рё MAX.
+
+Р Р°Р±РѕС‚Р°РµС‚ С‚Р°Рє Р¶Рµ, РєР°Рє РѕСЃРЅРѕРІРЅРѕР№ Р±РѕС‚ РєР°СЂС‚РёРЅ:
+- GitHub Actions Р·Р°РїСѓСЃРєР°РµС‚ СЃРєСЂРёРїС‚ РєР°Р¶РґС‹Р№ С‡Р°СЃ РІ РѕРєРЅРµ 11вЂ“20 РњРЎРљ
+- РЎРєСЂРёРїС‚ СЃР°Рј СЂРµС€Р°РµС‚, РїСѓР±Р»РёРєРѕРІР°С‚СЊ Р»Рё СЃРµРіРѕРґРЅСЏ (С‚РѕР»СЊРєРѕ С‡РµС‚РІРµСЂРі + РЅРµ СЂР°РЅСЊС€Рµ С‡РµРј С‡РµСЂРµР· 7 РґРЅРµР№)
+- РЎР»СѓС‡Р°Р№РЅС‹Р№ С‡Р°СЃ РІРЅСѓС‚СЂРё РѕРєРЅР°
+- РћС‚РґРµР»СЊРЅС‹Рµ РїРѕСЃС‚С‹ РІ Telegram Рё MAX
+й    N)ЪdatetimeЪ	timedelta)ЪPath)ЪZoneInfoz
+posts.jsonz
+state.jsonЪ	BOT_TOKENЪ Ъ
+CHANNEL_IDЪ
+MAX_BOT_TOKENЪMAX_CHANNEL_IDz
+Europe/Moscowй   й    й
+   й   u>   РРЅС‚РµСЂРµСЃРЅС‹Рµ РєР°СЂС‚РёРЅС‹ РЅР° РЅР°С€РµРј СЃР°Р№С‚Рµzhttps://www.ivory-art.comc                 у   — | j                  «       r,t        | d¬«      5 }t        j                  |«      cd d d «       S |S # 1 sw Y   |S xY w)Nъutf-8©Ъencoding)ЪexistsЪopenЪjsonЪload)ЪpathЪ defaultЪfs      ъ!art_facts_gh/scripts/post_once.pyЪ	load_jsonr   /   sA   Ђ Ш 
+‡{Ѓ{„}Ь
+ђ$ Ф
+)р 	 ЁQЬ—9‘9Q“<ч	 с 	 а
+ЂNч	 а
+ЂNъs	   ћ?їA	 c                  у|   — t        | dd¬«      5 }t        j                  ||dd¬«       d d d «       y # 1 sw Y   y xY w) NЪwr   r   Fй   )Ъensure_asciiЪindent)r   r   Ъdump)r   Ъdatar   s      r   Ъ	save_jsonr$   6   s7   Ђ Ь	
+€dђC 'Ф	*р 9ЁaЬЏ	‰	ђ$Ё°aХ8ч9ч 9с 9ъs   Џ2І; c           	      у~  — d }t        |xs i «      }|Ѓ/t        j                  |«      j                   d«      }d|d<   |xs d}t        j
+                  j
+                  | |||xs d¬«      }	 t        j
+                  j                  |d ¬«      5 } | j                  «       j                  d«      }|rt        j                  |«      ni cd d d «       S # 1 sw Y   y xY w# t        j                  j                  $ rE}	|	j                  «       j                  dd	¬
+«      }
+t        d
+|	j                  › d|
+d d
+ › ќ«       ‚ d }	~	ww xY w)Nr   zapplication/jsonъContent-TypeЪPOSTЪGET©r#   Ъ headersЪmethodй<   ©Ъ timeoutЪ replace)ЪerrorszHTTP z: iф  )Ъdictr   ЪdumpsЪencodeЪurllibЪ requestЪ RequestЪ urlopenЪreadЪdecodeЪloadsЪerrorЪ	HTTPErrorЪprintЪcode)
+ЪurlЪ payloadr*   r+   r#   ЪhdrsЪreqЪrespЪbodyЪeЪerr_bodys
+              r   Ъ	http_jsonrG   ;   s  Ђ Ш
+ЂDЬ
+ђ ’
+2У
+ЂDШ Р ЬЏz‰z'У"Ч)С)Ё'У2€Ш1€€^СШТ!6€Ь
+Џ.‰.Ч
+ С
+  Ё4ёАfВoРPUР
+ У
+VЂCр Ь
+Џ^‰^Ч
+#С
+# C°Р
+#У
+4р 	4ёШ—9‘9“;Ч%С% gУ.€DЩ'+”4—:‘:dФ#°ч	4ч 	4т 	4ыф Џ<‰<Ч
+!С
+!т Ш—6‘6“8—?‘? 7°9ђ?У=€Ь
+ђђa—f‘fђXR ЁЁ# Р/Р0Ф1Ш
+ыр ъs7   Б+!C В8CГ	C ГC ГC ГC ГD<Г7A D7Д7D<c                 уh  — |j                  «       t        k7  rt        d|j                  «       › dќ«       yt        |j                  cxk  r	t
+        k  sn t        d|j                  › dќ«       yd}| j
+                  d «      rQ	 t        j                  | d    «      }|j                  Ђ|j                  t        ¬«      }n|j                  t        «      }|r-|j                  «       |j                  «       k(  rt        d	«       y|r*||z
+  t        t         ¬
+«      k  rt        d
+t         › dќ«       yt#        t%        |j                  t
+        «      «      }|syt'        j(                  |«      }t        d
+|› d|› d|j                  › ќ«       |j                  |k7  rt        d«       yy# t        $ r d}Y ЊЭw xY w)uB   Р РµС€Р°РµРј, РїСѓР±Р»РёРєРѕРІР°С‚СЊ Р»Рё РїСЂСЏРјРѕ СЃРµР№С‡Р°СЃ.zNot Thursday (weekday=z ), skipFzOutside window (z:00 MSK), skipNЪlast_post_at)ЪtzinfozAlready posted today, skip)ЪdayszNeed z days since last post, skipzRemaining hours z	, chosen z, now zNot this hour, skipT)Ъ weekdayЪPOST_WEEKDAYr=   ЪWINDOW_START_HOURЪhourЪWINDOW_END_HOURЪgetr   Ъ
+fromisoformatrJ   r/   ЪTZЪ
+astimezoneЪ	ExceptionЪdater   ЪPOST_EVERY_DAYSЪlistЪrangeЪrandomЪchoice)ЪstateЪnowЪlastЪ	remainingЪchosens        r   Ъshould_post_nowra   M   sw  Ђ р 
+‡{Ѓ{ѓ}њТ $Ь
+Р& s§{Ў{Ј} o°WР=Ф>Шф 
+ §ЎФ;¬OФ;Ь
+Р  §Ў 
+Ё.Р9Ф:Ша
+ЂDШ ‡yЃyђФ  р 	ЬЧ)С)Ё%°С*?У@€DШЏ{‰{Р"Ш—|‘|¬2ђ|У.‘а—‘¤rУ*ђс
+ ђ—	‘	“
+sџx™x›zТ)Ь
+Р*Ф+Шс ђђt‘њy¬oФ>Т>Ь
+ђ”oР&Р&AРBФCШф ”U3џ8™8¤_У5У6ЂIЩ
+ШЬ
+Џ]‰]9У
+%ЂFЬ	РYK y°°ёёsїx№xёjР
+IФJШ 
+‡xЃxђ6Т Ь
+Р#Ф$ШШ
+шф- т 	ШЉDр	ъs   ВAF# Ж#
+F1Ж0F1c                  у  — t        |j                  dg «      «      }t        t         | «      «      D Џcg c]	  }||vsЊ|‘Њ
+ }}|s-t	        d«       t
+        t        t         | «      «      «      }g |d<   t
+        j                  |«      S c c}w )NЪused_indiceszAll posts used, resetting cycle)ЪsetrQ   rY   Ъlenr=   rX   rZ   r[   )Ъpostsr\   ЪusedЪiЪ	availables        r   Ъ	pick_postrj   z   sw   Ђ Ь
+€uЏy‰yЁУ,У
+-ЂDЬ!¤# eЈ*У-Ц?ђq°ё$І’Р?ЂIР?Щ
+Ь
+Р/Ф0Ьњњs 5›zУ*У+€	Ш "€€nСЬ
+Џ=‰=У
+#Р#щт
+ @s
+   І	BјBc                  уи  — t         rt        st        d«       y| j                   d| j                   dd«      «      }| j                   d«      xs dj	                  «       }| j                   d «      xs t
+        j	                  «       }dt        |d	њggi}|rd
+t         › d
+ќ}t        |||dњ}nd
+t         › d
+ќ}t        ||dњ}t        ||«      } | j                   d«      s
+t        d| «       yt        d«       y)Nz)Skip Telegram: no BOT_TOKEN or CHANNEL_IDFЪ captionЪtitler   ЪphotoЪlinkЪinline_keyboard)Ъtextr?   zhttps://api.telegram.org/botz
+/sendPhoto)Ъ chat_idrn   rl   Ъreply_markupz/sendMessage)rr   rq   rs   ЪokzTelegram error:z
+Telegram OKT)ЪTG_TOKENЪ
+TG_CHANNELr=   rQ   ЪstripЪDEFAULT_LINKЪ
+BUTTON_TEXTrG   )Ъpostrl   rn   ro   Ъkeyboardr?   r@   Ъresults           r   Ъ
+post_telegramr}   „   sт   Ђ Э
+ќ:Ь
+Р9Ф:ШаЏh‰hђy $§(Ў(Ё7°BУ"7У8ЂGШ
+ЏX‰XђgУ
+Т
+$ "Ч+С+У-ЂEШЏH‰HђVУТ,¤Ч
+3С
+3У
+5ЂDШ!¬kА$С%GР$HР#IРJЂHб Ш,¬XЁJ°jРA€д!ШШШ$с	
+‰ р -¬XЁJ°lРC€д!ШШ$с 
+€ ф ђsGУ
+$ЂFШ
+Џ:‰:ђdФ
+Ь
+Р Ф(ШЬ	€-ФШ
+у    c                 у  — t         j                  j                  | ddi¬«      }t         j                  j                   ||¬«      5 }|j	                  «       |j
+                  j
+                  dd«      fcd d d «       S # 1 sw Y   y xY w)uK   РЎРєР°С‡РёРІР°РµС‚ С„Р°Р№Р» РїРѕ URL (СЃР»РµРґСѓРµС‚ СЂРµРґРёСЂРµРєС‚Р°Рј).z
+User-Agentz+Mozilla/5.0 (compatible; ivory-art-bot/1.0)©r*   r-   r&   z
+image/jpegN) r4   r5   r6   r7   r8   r*   rQ   )r?   r.   rB   rC   s       r   Ъdownload_bytesrЃ   ¦   sz   Ђ д
+Џ.‰.Ч
+ С
+ Ш
+ШРLРMр 
+!у 
+ЂCф 
+Џ‰Ч	С	 ЁWР	У	5р KёШЏy‰y‹{DџL™LЧ,С,Ё^ё\УJРJчKч Kт Kъs   Б,A;Б;B c                  у  ‡ ‡— dЉt        «       Љ € €fd„}‰ j                  d‰› dќj                  «       «       ‰ j                  d|› dќj                  «       «       ‰ j                  d «       ‰ j                  | «       ‰ j                  d«       ‰ j                  d‰› d	ќj                  «       «       t        j                  j
+                  d
+t
+        ‰ «      t        d
+‰› ќdњd
+¬«      }t        j                  j                  |d¬«      5 }t        j                  |j                  «       j                  d«      «      }ddd«       j                  d«      xs |j                  d«      }|st        d|› ќ«      ‚||fS # 1 sw Y   ЊAxY w)uЋ   
+    Р—Р°РіСЂСѓР¶Р°РµС‚ РєР°СЂС‚РёРЅРєСѓ РІ MAX С‡РµСЂРµР· /uploads.
+    Р’РѕР·РІСЂР°С‰Р°РµС‚ token (РёР»Рё url) РґР»СЏ РІР»РѕР¶РµРЅРёСЏ.
+    z#----IvoryArtBoundary7MA4YWxkTrZu0gWc                 у  •— ‰j                  d‰› dќj                  «       «       ‰j                  d| › dќj                  «       «       ‰j                  t        |t        «      r|j                  «       n|«       ‰j                  d«       y )Nъ--ъ
+z&Content-Disposition: form-data; name="z"
+
+у   
+)Ъextendr3   Ъ
+isinstanceЪstr)ЪnameЪvaluerD   Ъboundarys     ЂЂr   Ъ	add_fieldz&upload_image_to_max.<locals>.add_fieldё   si   шЂ ШЏ
+‰
+ђb
+ $Р'Ч.С.У0Ф1ШЏ
+‰
+Р<ёTёFА)РLЧSСSУUФVШЏ
+‰
+¤j°јФ&<ђE—L‘L”NА%ФHШЏ
+‰
+ђGХr~   r„   r…   z7Content-Disposition: form-data; name="file"; filename="z"
+s   Content-Type: image/jpeg
+
+r†   z--
+z$https://platform-api2.max.ru/uploadszmultipart/form-data; boundary=)Ъ
+Authorizationr&   r'   r)   йZ   r-   r   NЪtokenr?   z"MAX upload: no token in response: )Ъ	bytearrayr‡   r3   r4   r5   r6   ЪbytesЪ	MAX_TOKENr7   r   r:   r8   r9   rQ   ЪRuntimeError)	Ъ
+image_bytesЪfilenamerЌ   rB   rC   r#   rђ   rD   rЊ   s	          @@r   Ъupload_image_to_maxr—   °   s`  щЂ р
+ 5ЂHЬ
+‹;ЂDхр 	‡KЃKђ"ђXђJdР#Ч*С*У,Ф-Ш‡KЃKШ
+AА(АИ5РQЧXСXУZфр 	‡KЃKР3Ф4Ш‡KЃKђ
+ФШ‡KЃKђ ФШ‡KЃKђ"ђXђJfР%Ч,С,У.Ф/д
+Џ.‰.Ч
+ С
+ Ш.Ь
+ђ4‹[д&Ш<ёXёJРGс
+р р 
+!у 
+ЂCф 
+Џ‰Ч	С	 ЁRР	У	0р 7°DЬЏz‰z$џ)™)›+Ч,С,ЁWУ5У6€ч7аЏH‰HђWУТ0 §ЎЁ%ЈЂEЩ
+ЬР?АёvРFУGРGШ
+ђ$€;Рч
+7р 7ъs   Д3E;Е;F c                  уо  — t         rt        st        d«       y| j                   d| j                   dd«      «      }dD ]  }|j	                  |d«      }Њ | j                   d «      xs dj
+                  «       }| j                   d«      xs t        j
+                  «       }d	d
+dt        |d
+њggidњ}|g}|st        d
+«       y	 t        d«       t        |«      \  } }t        dt        | «      › d|› dќ«       t        d«       t        | «      \  }	}
+t        dt        |
+«      dd «       t        |	«      j                  d«      rd|	i}
+nd|	i}
+d|
+dњ|g}dt        › ќ}
+dt         i}||ddњ}	 t        |
+||¬«      }t        d |j                   d!i «      j                   d"i «      j                   d#|«      «       y# t        $ r}t        d|«       Y d}~yd}~ww xY w# t        $ r}t        d$|«       Y d}~yd}~ww xY w)%ut   РџСѓР±Р»РёРєР°С†РёСЏ РІ MAX РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ СЃ РєР°СЂС‚РёРЅРєРѕР№ (СЃРєР°С‡РёРІР°РµРј Рё Р·Р°РіСЂСѓР¶Р°РµРј).z,Skip MAX: no MAX_BOT_TOKEN or MAX_CHANNEL_IDFrl   rm   r   )z<b>z</b>z<i>z</i>rn   ro   rp   Ъ buttons)Ъtyperq   r?   )rљ   r@   u.   MAX error: no photo URL in post вЂ” need imagezDownloading image for MAX...z
+Downloaded z bytes (ъ)zUploading image to MAX...zMAX upload OK:NйИ   Ъhttpr?   rђ   ЪimagezMAX image upload failed:z.https://platform-api2.max.ru/messages?chat_id=rЋ   T)rq   Ъ
+attachmentsЪnotifyrЂ   z MAX OK:Ъ messagerD   ЪmidzMAX send error:)r“   Ъ
+MAX_CHANNELr=   rQ   r/   rw   rx   ry   rЃ   re   r—   r‰   Ъ
+startswithrU   rG   )rz   rq   Ъtagrn   ro   r{   rџ   Ъ	img_bytesЪcontent_typerђ   Ъ
+upload_infoЪ
+img_payloadrE   r?   r*   r@   r|   s                    r   Ъpost_maxrЄ   Ш   s
+  Ђ е
+ќKЬ
+Р<Ф=Ша
+Џ8‰8ђItџx™xЁ °У4У
+5ЂDШ-т %€ШЏ|‰|C У$‰р%р ЏX‰XђgУ
+Т
+$ "Ч+С+У-ЂEШЏH‰HђVУТ,¤Ч
+3С
+3У
+5ЂDр "а &ґ+АdСKРLРMр
+сЂHр ђ*ЂKб
+Ь
+Р>Ф?ШрЬ
+Р,Ф-Ь"0°У"7С€	ђ<Ь
+ђ
+њC 	›NР+Ё8°L°>АРCФDд
+Р)Ф*Ь0°У;С€€{Ь
+Р¤ KУ 0°°#Р 6Ф7ф €u‹:Ч
+ С
+  Ф
+(Ш  %.‰Kа" EР*€Kр ЁС5Шр
+€
+р 
+;ј;ё-Р
+HЂCШ¤	Р*ЂGШЁKА4СHЂGрЬ3  °Ф9€Ь
+€iџ™ IЁrУ2Ч6С6°vёrУBЧFСFАuИfУUФVШшф т Ь
+Р(Ё!Ф,Ьырыф т Ь
+Р Ф#Ьыръs2   ГBF3 Е(A
+G Ж3	GЖ<G
+З
+GЗ	G4ЗG/З/G4c                  уB  — t        j                  t        «      } t         d| j	                  «       › ќ«       t
+        t        g «      }t
+        t        d g dњ«      }|s t         d«       t        j                  d«       t        j                  j                  dd«      j                  «       d k(  }|s,t        || «      s t         d«       t        j                  d	«       t        ||«      }||   }|j                  d
+d
+|› ќ«      }t!        |«      } t#        |«      }| s"|s t         d«       t        j                  d«       t%        |j                  d
+g «      «      }	||	vr|	j'                  |«       |	|d
+<   | j	                  «       |d<   t)        t        |«       t         d|› ќ«       y )Nz	Now MSK: )rI   rc   zNo posts in posts.jsonй   Ъ
+FORCE_POSTr   Ъ1zNo post this runr   rm   ъ#zBoth channels failedrc   rI   zDone: )r   r]   rS   r=   Ъ	isoformatr   Ъ
+POSTS_FILEЪ
+STATE_FILEЪsysЪexitЪosЪ environrQ   rw   ra   rj   r}   rЄ   rX   Ъappendr$   )
+r]   rf   r\   ЪforceЪidxrz   rm   Ъok_tgЪok_maxrg   s
+             r   Ъmainrј     sN  Ђ Ь
+Џ,‰,”rУ
+ЂCЬ	€Iђc—m‘m“oР&Р
+'Ф(д”j "У%ЂEЬ”j°4ИС"LУMЂEб
+Ь
+Р&Ф'Ь
+Џ‰ђЊ
+дЏJ‰JЏN‰N<ЁУ,Ч2С2У4ёС;ЂEЩ
+њЁ°Ф4Ь
+Р Ф!Ь
+Џ‰ђЊ
+д
+ђE5У
+!ЂCШ
+ђ‰:ЂDШЏH‰HђW  # iУ(ЂEд$УЂEЬ
+ђd‹^ЂFб
+™Ь
+Р$Ф%Ь
+Џ‰ђЊ
+д
+ђ—	‘	.Ё"У-У
+.ЂDШ 
+ђ$ЃШЏ
+‰
+ђCФШ ЂE€.СШџM™M›OЂE€.СЬ
+Њj%Ф Ь	€Fђ5ђ'Р
+Хr~   Ъ__main__)NNN)rЏ   )z	photo.jpg)0Ъ __doc__r   rµ   rZ   Ъsslrі   Ъurllib.errorr4   Ъurllib.requestr   r   Ъ pathlibr   Ъzoneinfor   Ъ_create_unverified_contextЪ_create_default_https_contextЪ__file__Ъ resolveЪparentЪROOTr±   rІ   r¶   rQ   rw   ru   rv   r“   rЈ   rS   rM   rW   rN   rP   ry   rx   r   r$   rG   ra   rj   r}   rЃ   r—   rЄ   rј   Ъ__name__© r~   r   ъ<module>rМ      sV  рс	у Ы 	Ы 
+Ы 
+Ы 
+Ы Ы Я (Э Э р %(Ч$BС$BЂФ !б 
+€Hѓ~Ч С У Ч &С &Ч -С -ЂШ
+ђLС
+ Ђ
+Ш
+ђLС
+ Ђ
+а
+
+Џ:‰:Џ>‰>+ rУ
+*Ч
+0С
+0У
+2ЂШ
+ЏZ‰ZЏ^‰^LЁ"У
+-Ч
+3С
+3У
+5Ђ
+аЏJ‰JЏN‰N?ЁBУ/Ч5С5У7Ђ	ШЏj‰jЏn‰nР-ЁrУ2Ч8С8У:Ђ
+б
+€oУЂаЂШЂШР ШЂШNЂ
+Ш*Ђтт9у
+т$*тZ $туD Kу%тP;т|!рH €zТЩ…Fр r~   
