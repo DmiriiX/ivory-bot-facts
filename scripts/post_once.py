@@ -173,44 +173,85 @@ def download_bytes(url, timeout=90):
         return resp.read(), resp.headers.get("Content-Type", "image/jpeg")
 
 
-def upload_image_to_max(image_bytes, filename="photo.jpg"):
-    """
-    Загружает картинку в MAX через /uploads.
-    Возвращает token (или url) для вложения.
-    """
+def multipart_body(field_name, filename, content_type, data_bytes):
     boundary = "----IvoryArtBoundary7MA4YWxkTrZu0gW"
     body = bytearray()
-
-    def add_field(name, value):
-        body.extend(f"--{boundary}\r\n".encode())
-        body.extend(f'Content-Disposition: form-data; name="{name}"\r\n\r\n'.encode())
-        body.extend(value.encode() if isinstance(value, str) else value)
-        body.extend(b"\r\n")
-
     body.extend(f"--{boundary}\r\n".encode())
     body.extend(
-        f'Content-Disposition: form-data; name="file"; filename="{filename}"\r\n'.encode()
+        f'Content-Disposition: form-data; name="{field_name}"; filename="{filename}"\r\n'.encode()
     )
-    body.extend(b"Content-Type: image/jpeg\r\n\r\n")
-    body.extend(image_bytes)
+    body.extend(f"Content-Type: {content_type}\r\n\r\n".encode())
+    body.extend(data_bytes)
     body.extend(b"\r\n")
     body.extend(f"--{boundary}--\r\n".encode())
+    return bytes(body), boundary
 
+
+def extract_image_token(data):
+    """Достаёт token из ответа загрузки image в MAX."""
+    if not isinstance(data, dict):
+        return None
+    if data.get("token"):
+        return data["token"]
+    photos = data.get("photos")
+    if isinstance(photos, dict) and photos:
+        first = next(iter(photos.values()))
+        if isinstance(first, dict) and first.get("token"):
+            return first["token"]
+    return None
+
+
+def upload_image_to_max(image_bytes, filename="photo.jpg"):
+    """
+    Правильная двухшаговая загрузка image в MAX:
+    1) POST /uploads?type=image  -> получаем url
+    2) POST файл на этот url     -> получаем token
+    """
+    # Шаг 1: получить URL для загрузки (без тела)
     req = urllib.request.Request(
         "https://platform-api2.max.ru/uploads?type=image",
-        data=bytes(body),
-        headers={
-            "Authorization": MAX_TOKEN,
-            "Content-Type": f"multipart/form-data; boundary={boundary}",
-        },
+        data=b"",
+        headers={"Authorization": MAX_TOKEN},
         method="POST",
     )
-    with urllib.request.urlopen(req, timeout=90) as resp:
-        data = json.loads(resp.read().decode("utf-8"))
-    token = data.get("token") or data.get("url")
+    with urllib.request.urlopen(req, timeout=60) as resp:
+        meta = json.loads(resp.read().decode("utf-8"))
+    upload_url = meta.get("url")
+    if not upload_url:
+        raise RuntimeError(f"MAX /uploads: no url in response: {meta}")
+    print("MAX upload URL received")
+
+    # Шаг 2: загрузить файл на полученный URL
+    last_error = None
+    uploaded = {}
+    token = None
+    for field_name in ("data", "file"):
+        try:
+            body, boundary = multipart_body(field_name, filename, "image/jpeg", image_bytes)
+            req2 = urllib.request.Request(
+                upload_url,
+                data=body,
+                headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+                method="POST",
+            )
+            with urllib.request.urlopen(req2, timeout=90) as resp:
+                raw = resp.read().decode("utf-8", errors="replace")
+            try:
+                uploaded = json.loads(raw) if raw.strip() else {}
+            except json.JSONDecodeError:
+                uploaded = {"raw": raw[:300]}
+            token = extract_image_token(uploaded)
+            if token:
+                print(f"MAX upload step2 OK (field={field_name})")
+                break
+            last_error = f"no token in response: {uploaded}"
+        except Exception as e:
+            last_error = str(e)
+            continue
+
     if not token:
-        raise RuntimeError(f"MAX upload: no token in response: {data}")
-    return token, data
+        raise RuntimeError(f"MAX upload step2 failed: {last_error}")
+    return token, uploaded
 
 
 def post_max(post):
@@ -233,10 +274,8 @@ def post_max(post):
         },
     }
 
-    attachments = [keyboard]
-
     if not photo:
-        print("MAX error: no photo URL in post — need image")
+        print("MAX error: no photo URL in post - need image")
         return False
 
     try:
@@ -244,18 +283,12 @@ def post_max(post):
         img_bytes, content_type = download_bytes(photo)
         print(f"Downloaded {len(img_bytes)} bytes ({content_type})")
 
-        print("Uploading image to MAX...")
+        print("Uploading image to MAX (2 steps)...")
         token, upload_info = upload_image_to_max(img_bytes)
-        print("MAX upload OK:", str(upload_info)[:200])
-
-        # token или url — в зависимости от ответа API
-        if str(token).startswith("http"):
-            img_payload = {"url": token}
-        else:
-            img_payload = {"token": token}
+        print("MAX image token OK:", str(token)[:40], "...")
 
         attachments = [
-            {"type": "image", "payload": img_payload},
+            {"type": "image", "payload": {"token": token}},
             keyboard,
         ]
     except Exception as e:
