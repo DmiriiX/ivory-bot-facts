@@ -76,6 +76,11 @@ def http_json(url, payload=None, headers=None, method=None):
 
 def should_post_now(state, now):
     """Решаем, публиковать ли прямо сейчас."""
+    # Первый пост рубрики - публикуем сразу, даже вне окна
+    if not state.get("last_post_at"):
+        print("First rubric post - publish now")
+        return True
+
     # Только четверг
     if now.weekday() != POST_WEEKDAY:
         print(f"Not Thursday (weekday={now.weekday()}), skip")
@@ -121,6 +126,10 @@ def should_post_now(state, now):
 
 def pick_post(posts, state):
     used = set(state.get("used_indices", []))
+    # Самый первый пост рубрики всегда №1 (открытие)
+    if not used:
+        print("Picking first launch post")
+        return 0
     available = [i for i in range(len(posts)) if i not in used]
     if not available:
         print("All posts used, resetting cycle")
