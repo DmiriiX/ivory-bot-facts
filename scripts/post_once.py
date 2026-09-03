@@ -39,7 +39,7 @@ TZ = ZoneInfo("Europe/Moscow")
 POST_WEEKDAY = 3  # 0=пн … 3=чт
 POST_EVERY_DAYS = 7
 WINDOW_START_HOUR = 11
-WINDOW_END_HOUR = 20
+WINDOW_END_HOUR = 21
 BUTTON_TEXT = "Интересные картины на нашем сайте"
 DEFAULT_LINK = "https://www.ivory-art.com"
 
@@ -135,7 +135,10 @@ def pick_post(posts, state):
         print("All posts used, resetting cycle")
         available = list(range(len(posts)))
         state["used_indices"] = []
-    return random.choice(available)
+        return 0
+    chosen = available[0]
+    print(f"Next post in order: #{posts[chosen].get('id', chosen+1)} ({posts[chosen].get('title')})")
+    return chosen
 
 
 def post_telegram(post):
