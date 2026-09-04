@@ -2,9 +2,9 @@ name: Facts post TG + MAX (Thursdays)
 
 on:
   schedule:
-    # Каждый час 08:00–16:00 UTC = 11:00–19:00 Москва
+    # Каждый час 08:00–17:00 UTC = 11:00–20:00 Москва
     # Скрипт сам проверяет, что сегодня четверг
-    - cron: "0 8-16 * * *"
+    - cron: "0 8-17 * * *"
   workflow_dispatch:
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
           MAX_BOT_TOKEN: ${{ secrets.MAX_BOT_TOKEN }}
           MAX_CHANNEL_ID: ${{ secrets.MAX_CHANNEL_ID }}
           # Для ручного теста поставь "1", для авторежима оставь "0"
-          FORCE_POST: "1"
+          FORCE_POST: "0"
         run: python3 scripts/post_once.py
 
       - name: Save state
