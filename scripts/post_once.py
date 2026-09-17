@@ -4,9 +4,7 @@
 в Telegram и MAX.
 
 Работает так же, как основной бот картин:
-- GitHub Actions запускает скрипт каждый час в окне 11–20 МСК
-- Скрипт сам решает, публиковать ли сегодня (только четверг + не раньше чем через 7 дней)
-- Случайный час внутри окна
+- GitHub Actions запускает скрипт каждый четверг в 19:00 по Москве
 - Отдельные посты в Telegram и MAX
 """
 
@@ -35,11 +33,12 @@ MAX_TOKEN = os.environ.get("MAX_BOT_TOKEN", "").strip()
 MAX_CHANNEL = os.environ.get("MAX_CHANNEL_ID", "").strip()
 
 TZ = ZoneInfo("Europe/Moscow")
-# Только по четвергам, не чаще раза в 7 дней
+# Только по четвергам в 19:00 МСК
 POST_WEEKDAY = 3  # 0=пн … 3=чт
 POST_EVERY_DAYS = 7
-WINDOW_START_HOUR = 11
-WINDOW_END_HOUR = 21
+TARGET_HOUR = 19
+# Допуск, если GitHub запустил workflow с задержкой
+LATEST_HOUR = 21
 BUTTON_TEXT = "Интересные картины на нашем сайте"
 DEFAULT_LINK = "https://www.ivory-art.com"
 
@@ -75,20 +74,13 @@ def http_json(url, payload=None, headers=None, method=None):
 
 
 def should_post_now(state, now):
-    """Решаем, публиковать ли прямо сейчас."""
-    # Первый пост рубрики - публикуем сразу, даже вне окна
-    if not state.get("last_post_at"):
-        print("First rubric post - publish now")
-        return True
-
-    # Только четверг
+    """Публикуем по четвергам около 19:00 МСК."""
     if now.weekday() != POST_WEEKDAY:
         print(f"Not Thursday (weekday={now.weekday()}), skip")
         return False
 
-    # Только в окне 11:00–19:59 МСК
-    if not (WINDOW_START_HOUR <= now.hour < WINDOW_END_HOUR):
-        print(f"Outside window ({now.hour}:00 MSK), skip")
+    if not (TARGET_HOUR <= now.hour < LATEST_HOUR):
+        print(f"Waiting for 19:00 MSK (now {now.hour}:00), skip")
         return False
 
     last = None
@@ -102,25 +94,12 @@ def should_post_now(state, now):
         except Exception:
             last = None
 
-    # Уже публиковали сегодня
     if last and last.date() == now.date():
         print("Already posted today, skip")
         return False
 
-    # Не прошло 7 дней
-    if last and (now - last) < timedelta(days=POST_EVERY_DAYS):
-        print(f"Need {POST_EVERY_DAYS} days since last post, skip")
-        return False
 
-    # Случайный час из оставшихся в окне
-    remaining = list(range(now.hour, WINDOW_END_HOUR))
-    if not remaining:
-        return False
-    chosen = random.choice(remaining)
-    print(f"Remaining hours {remaining}, chosen {chosen}, now {now.hour}")
-    if now.hour != chosen:
-        print("Not this hour, skip")
-        return False
+    print(f"Thursday {now.strftime('%H:%M')} MSK - publishing")
     return True
 
 
