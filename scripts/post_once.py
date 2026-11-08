@@ -219,7 +219,7 @@ def main():
         save(state)
         if control.get("next_id") == key(post):
             control["next_id"] = None
-            control_path.write_text(json.dumps(control, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+            control_path.write_text(json.dumps(control, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print("Published to both destinations")
     else:
         sys.exit("Partial publication saved; failed destination will retry")
