@@ -1,0 +1,17 @@
+name: Validate bot without posting
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python syntax
+        run: python3 -m py_compile scripts/post_once.py
+      - name: Test publication history and retry
+        run: python3 -m unittest discover -s tests -v

@@ -1,36 +1,48 @@
-name: Facts post TG + MAX (Thursdays)
-
+name: IVORY-ART facts TG + MAX
 on:
   schedule:
-    # Четверг 16:00 UTC = 19:00 Москва
-    - cron: "0 16 * * 4"
-    # запасной запуск, если GitHub задержал первый
-    - cron: "20 16 * * 4"
+    - cron: '0 15-17 * * 4'
   workflow_dispatch:
-
+    inputs:
+      dry_run:
+        description: Preview without sending
+        type: boolean
+        default: true
+      force_post:
+        description: Ignore time restrictions (publishes live if dry_run false)
+        type: boolean
+        default: false
+concurrency:
+  group: ivory-art-facts-posting
+  cancel-in-progress: false
 jobs:
   post:
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Publish fact to Telegram and MAX
+      - uses: actions/checkout@v4
+      - name: Check Python syntax
+        run: python3 -m py_compile scripts/post_once.py
+      - name: Run safety regression tests
+        run: python3 -m unittest discover -s tests -v
+      - name: Publish Telegram + MAX
         env:
+          BOT_KIND: facts
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHANNEL_ID: ${{ secrets.CHANNEL_ID }}
           MAX_BOT_TOKEN: ${{ secrets.MAX_BOT_TOKEN }}
           MAX_CHANNEL_ID: ${{ secrets.MAX_CHANNEL_ID }}
-          # Для ручного теста поставь "1", для авторежима оставь "0"
-          FORCE_POST: "0"
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && '1' || '0' }}
+          FORCE_POST: ${{ github.event_name == 'workflow_dispatch' && inputs.force_post && '1' || '0' }}
         run: python3 scripts/post_once.py
-
-      - name: Save state
+      - name: Persist publication state even after partial failure
+        if: always()
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add state.json
-          git diff --staged --quiet || git commit -m "facts state updated"
-          git push
+          if ! git diff --cached --quiet; then
+            git commit -m 'Save facts publication state [skip ci]'
+            git push
+          fi
