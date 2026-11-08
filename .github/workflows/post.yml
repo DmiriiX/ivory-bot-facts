@@ -24,6 +24,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check Python syntax
         run: python3 -m py_compile scripts/post_once.py
+      - name: Run safety regression tests
+        run: python3 -m unittest discover -s tests -v
       - name: Publish Telegram + MAX
         env:
           BOT_KIND: facts
