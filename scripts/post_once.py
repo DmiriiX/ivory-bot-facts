@@ -148,6 +148,11 @@ def main():
     if "used_ids" not in state:
         state["used_ids"] = [key(posts[i]) for i in state.get("used_indices", []) if type(i) is int and 0 <= i < len(posts)]
         save(state)
+    control_path = ROOT / "control.json"
+    control = json.loads(control_path.read_text(encoding="utf-8")) if control_path.exists() else {}
+    if control.get("paused"):
+        print("Publication paused by IVORY-ART admin")
+        return
     now = datetime.now(TZ)
     pending = state.get("pending")
     if pending:
@@ -158,11 +163,16 @@ def main():
         if os.getenv("FORCE_POST") != "1" and not due(state, now):
             print("Not due")
             return
-        available = [p for p in posts if key(p) not in set(state["used_ids"])]
+        excluded = set(control.get("excluded_ids") or [])
+        available = [p for p in posts if key(p) not in set(state["used_ids"]) and key(p) not in excluded]
         if not available:
             print("No fresh posts left, not repeating")
             return
-        if FACTS:
+        preferred = control.get("next_id")
+        choice = next((p for p in available if key(p) == preferred), None)
+        if choice:
+            post = choice
+        elif FACTS:
             post = available[0]
         else:
             different = [p for p in available if p.get("artist") != state.get("last_artist")]
@@ -207,6 +217,9 @@ def main():
             state["last_artist"] = post.get("artist")
         state.pop("pending", None)
         save(state)
+        if control.get("next_id") == key(post):
+            control["next_id"] = None
+            control_path.write_text(json.dumps(control, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print("Published to both destinations")
     else:
         sys.exit("Partial publication saved; failed destination will retry")
