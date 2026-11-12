@@ -1,5 +1,5 @@
 {
-  "last_post_at": "2026-09-24T19:17:40.235294+03:00",
+  "last_post_at": "2026-11-12T21:44:32.176737+03:00",
   "used_indices": [
     0,
     1,
@@ -9,15 +9,10 @@
   ],
   "used_ids": [
     "03dec71c7b20ffe23a4a369c",
-    "5919be562a27fc58dce00b38",
     "52d3d95e9bf4b44502478eb0",
+    "5919be562a27fc58dce00b38",
     "59576b60f0281ccf865044ae",
-    "d5980bda697e35bba34a24cb"
-  ],
-  "pending": {
-    "id": "ead7e62dd530ff02949b8d69",
-    "telegram": true,
-    "max": false,
-    "date": "2026-11-12"
-  }
+    "d5980bda697e35bba34a24cb",
+    "ead7e62dd530ff02949b8d69"
+  ]
 }
