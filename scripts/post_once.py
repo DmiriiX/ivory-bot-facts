@@ -124,7 +124,7 @@ def max_send(post, image):
 def due(state, now):
     if FACTS and now.weekday() != 3:
         return False
-    start, end = (18, 21) if FACTS else (11, 20)
+    start, end = (19, 24) if FACTS else (11, 20)
     if not start <= now.hour < end:
         return False
     if state.get("last_post_at"):
@@ -136,7 +136,7 @@ def due(state, now):
         except ValueError:
             pass
     date_key = ("facts:" if FACTS else "paintings:") + str(now.date())
-    hour = start + int(hashlib.sha256(date_key.encode()).hexdigest(), 16) % (end - start)
+    hour = 19 if FACTS else start + int(hashlib.sha256(date_key.encode()).hexdigest(), 16) % (end - start)
     print("Scheduled hour:", hour, "MSK")
     return now.hour >= hour
 
@@ -160,6 +160,15 @@ def main():
         if post is None:
             sys.exit("Pending post missing: do not discard it")
     else:
+        if FACTS and state.get("last_post_at"):
+            try:
+                last = datetime.fromisoformat(state["last_post_at"])
+                last = last.replace(tzinfo=TZ) if last.tzinfo is None else last.astimezone(TZ)
+                if last.date() == now.date():
+                    print("Thursday fact already published today")
+                    return
+            except ValueError:
+                pass
         if os.getenv("FORCE_POST") != "1" and not due(state, now):
             print("Not due")
             return

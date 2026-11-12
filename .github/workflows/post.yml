@@ -1,7 +1,11 @@
 name: IVORY-ART facts TG + MAX
 on:
   schedule:
-    - cron: '0 15-17 * * 4'
+    # Recheck throughout Thursday evening. State prevents duplicate posts.
+    - cron: '0,15,30,45 16-20 * * 4'
+  push:
+    paths:
+      - '.github/facts-manual-trigger.txt'
   workflow_dispatch:
     inputs:
       dry_run:
@@ -34,7 +38,7 @@ jobs:
           MAX_BOT_TOKEN: ${{ secrets.MAX_BOT_TOKEN }}
           MAX_CHANNEL_ID: ${{ secrets.MAX_CHANNEL_ID }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && '1' || '0' }}
-          FORCE_POST: ${{ github.event_name == 'workflow_dispatch' && inputs.force_post && '1' || '0' }}
+          FORCE_POST: ${{ github.event_name == 'push' && '1' || (github.event_name == 'workflow_dispatch' && inputs.force_post && '1' || '0') }}
         run: python3 scripts/post_once.py
       - name: Persist publication state even after partial failure
         if: always()

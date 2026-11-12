@@ -4,6 +4,8 @@ import os
 import tempfile
 import unittest
 from pathlib import Path
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from unittest.mock import patch
 
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "post_once.py"
@@ -16,6 +18,27 @@ def load(kind):
     return module
 
 class PostingTests(unittest.TestCase):
+    def test_thursday_evening_accepts_delayed_runs_without_repeating(self):
+        bot = load("facts")
+        msk = ZoneInfo("Europe/Moscow")
+        self.assertFalse(bot.due({}, datetime(2026, 11, 12, 18, 59, tzinfo=msk)))
+        self.assertTrue(bot.due({}, datetime(2026, 11, 12, 23, 44, tzinfo=msk)))
+        self.assertFalse(bot.due({}, datetime(2026, 11, 13, 0, 1, tzinfo=msk)))
+        self.assertFalse(bot.due({"last_post_at":"2026-11-12T19:02:00+03:00"},
+                                 datetime(2026, 11, 12, 23, 44, tzinfo=msk)))
+
+    def test_manual_trigger_does_not_send_second_fact_same_day(self):
+        bot=load("facts")
+        with tempfile.TemporaryDirectory() as directory:
+            bot.ROOT=Path(directory);bot.STATE=bot.ROOT / "state.json"
+            (bot.ROOT / "posts.json").write_text(json.dumps([{"id":1,"title":"Fact"}]))
+            bot.STATE.write_text(json.dumps({"used_ids":[],"last_post_at":"2026-11-12T19:02:00+03:00"}))
+            with patch.dict(os.environ,{"FORCE_POST":"1","DRY_RUN":"0"}), \
+                 patch.object(bot,"datetime") as clock,patch.object(bot,"telegram") as send:
+                clock.now.return_value=datetime(2026,11,12,22,0,tzinfo=ZoneInfo("Europe/Moscow"))
+                clock.fromisoformat.side_effect=datetime.fromisoformat
+                bot.main()
+                send.assert_not_called()
     def test_identity_stable_after_reordering(self):
         bot = load("paintings")
         a = {"link": "https://ivory-art.com/shop/one", "title": "First"}
