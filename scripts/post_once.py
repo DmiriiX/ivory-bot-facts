@@ -6,6 +6,7 @@ import json
 import os
 import random
 import re
+import ssl
 import sys
 import urllib.error
 import urllib.parse
@@ -19,6 +20,7 @@ ROOT = Path(__file__).resolve().parent.parent
 FACTS = os.getenv("BOT_KIND") == "facts"
 TZ = ZoneInfo("Europe/Moscow")
 STATE = ROOT / "state.json"
+MAX_CA = ROOT / "certs" / "russian_trusted_ca.pem"
 BUTTON = "Интересные картины на нашем сайте" if FACTS else "Больше картин на нашем сайте"
 
 def key(post):
@@ -30,6 +32,13 @@ def save(state):
     tmp.write_text(json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     tmp.replace(STATE)
 
+def tls_context(url):
+    context = ssl.create_default_context()
+    host = urllib.parse.urlsplit(url).hostname or ""
+    if host == "max.ru" or host.endswith(".max.ru"):
+        context.load_verify_locations(cafile=str(MAX_CA))
+    return context
+
 def call(url, payload, headers=None, method=None):
     data = json.dumps(payload, ensure_ascii=False).encode("utf-8") if payload is not None else None
     hdr = dict(headers or {})
@@ -37,7 +46,7 @@ def call(url, payload, headers=None, method=None):
         hdr["Content-Type"] = "application/json; charset=utf-8"
     req = urllib.request.Request(url, data=data, headers=hdr, method=method or ("POST" if data is not None else "GET"))
     try:
-        with urllib.request.urlopen(req, timeout=60) as resp:
+        with urllib.request.urlopen(req, timeout=60, context=tls_context(url)) as resp:
             return json.loads(resp.read().decode("utf-8") or "{}"), False
     except urllib.error.HTTPError as exc:
         print("HTTP error", exc.code, exc.read().decode("utf-8", errors="replace")[:160])
@@ -101,7 +110,7 @@ def max_upload(image):
     boundary = "Ivory" + uuid.uuid4().hex
     body = ('--' + boundary + '\r\nContent-Disposition: form-data; name="data"; filename="painting.jpg"\r\nContent-Type: ' + image[1] + '\r\n\r\n').encode() + image[0] + ('\r\n--' + boundary + '--\r\n').encode()
     req = urllib.request.Request(url, data=body, headers={"Content-Type": "multipart/form-data; boundary=" + boundary}, method="POST")
-    with urllib.request.urlopen(req, timeout=90) as resp:
+    with urllib.request.urlopen(req, timeout=90, context=tls_context(url)) as resp:
         result = json.loads(resp.read().decode("utf-8") or "{}")
     photo_token = result.get("token")
     if not photo_token and isinstance(result.get("photos"), dict):
